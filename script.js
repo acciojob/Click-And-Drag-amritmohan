@@ -3,34 +3,40 @@ document.querySelectorAll('.item').forEach(item => {
 
     item.addEventListener('mousedown', (e) => {
         isDragging = true;
-        offsetX = e.clientX - item.offsetLeft;
-        offsetY = e.clientY - item.offsetTop;
+        offsetX = e.clientX - item.getBoundingClientRect().left;
+        offsetY = e.clientY - item.getBoundingClientRect().top;
         item.style.position = 'absolute';
         item.style.zIndex = 1000;  // Bring the dragged item to the front
+        item.style.cursor = 'grabbing';
     });
 
     document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            let itemsContainer = document.querySelector('.items');
-            let containerRect = itemsContainer.getBoundingClientRect();
+        if (!isDragging) return;
 
-            let newX = e.clientX - offsetX;
-            let newY = e.clientY - offsetY;
+        let container = document.querySelector('.items');
+        let containerRect = container.getBoundingClientRect();
+        let itemRect = item.getBoundingClientRect();
 
-            // Ensure the item stays within the container boundaries
-            let maxX = containerRect.width - item.offsetWidth;
-            let maxY = containerRect.height - item.offsetHeight;
+        let newX = e.clientX - offsetX;
+        let newY = e.clientY - offsetY;
 
-            newX = Math.max(0, Math.min(newX, maxX));
-            newY = Math.max(0, Math.min(newY, maxY));
+        // Ensure the item stays within the container
+        let minX = containerRect.left;
+        let maxX = containerRect.right - itemRect.width;
+        let minY = containerRect.top;
+        let maxY = containerRect.bottom - itemRect.height;
 
-            item.style.left = newX + 'px';
-            item.style.top = newY + 'px';
-        }
+        newX = Math.max(minX, Math.min(newX, maxX));
+        newY = Math.max(minY, Math.min(newY, maxY));
+
+        // Set new position
+        item.style.left = newX - containerRect.left + 'px';
+        item.style.top = newY - containerRect.top + 'px';
     });
 
     document.addEventListener('mouseup', () => {
         isDragging = false;
         item.style.zIndex = 1;  // Reset stacking order
+        item.style.cursor = 'grab';
     });
 });
