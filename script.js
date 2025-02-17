@@ -1,52 +1,36 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const itemsContainer = document.querySelector(".items");
-  let isDragging = false;
-  let startX;
-  let scrollLeft;
+document.querySelectorAll('.item').forEach(item => {
+    let offsetX, offsetY, isDragging = false;
 
-  // Prevent text selection during drag
-  itemsContainer.style.userSelect = "none";
+    item.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - item.offsetLeft;
+        offsetY = e.clientY - item.offsetTop;
+        item.style.position = 'absolute';
+        item.style.zIndex = 1000;  // Bring the dragged item to the front
+    });
 
-  itemsContainer.addEventListener("mousedown", (e) => {
-    isDragging = true;
-    itemsContainer.classList.add("active");
-    startX = e.pageX - itemsContainer.offsetLeft;
-    scrollLeft = itemsContainer.scrollLeft;
-  });
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            let itemsContainer = document.querySelector('.items');
+            let containerRect = itemsContainer.getBoundingClientRect();
 
-  itemsContainer.addEventListener("mouseleave", () => {
-    isDragging = false;
-    itemsContainer.classList.remove("active");
-  });
+            let newX = e.clientX - offsetX;
+            let newY = e.clientY - offsetY;
 
-  itemsContainer.addEventListener("mouseup", () => {
-    isDragging = false;
-    itemsContainer.classList.remove("active");
-  });
+            // Ensure the item stays within the container boundaries
+            let maxX = containerRect.width - item.offsetWidth;
+            let maxY = containerRect.height - item.offsetHeight;
 
-  itemsContainer.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - itemsContainer.offsetLeft;
-    const walk = (x - startX) * 1.5; // Adjust the scroll speed
-    itemsContainer.scrollLeft = scrollLeft - walk;
-  });
+            newX = Math.max(0, Math.min(newX, maxX));
+            newY = Math.max(0, Math.min(newY, maxY));
 
-  // Ensure the drag works on touch devices as well
-  itemsContainer.addEventListener("touchstart", (e) => {
-    startX = e.touches[0].pageX - itemsContainer.offsetLeft;
-    scrollLeft = itemsContainer.scrollLeft;
-    isDragging = true;
-  });
+            item.style.left = newX + 'px';
+            item.style.top = newY + 'px';
+        }
+    });
 
-  itemsContainer.addEventListener("touchmove", (e) => {
-    if (!isDragging) return;
-    const x = e.touches[0].pageX - itemsContainer.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    itemsContainer.scrollLeft = scrollLeft - walk;
-  });
-
-  itemsContainer.addEventListener("touchend", () => {
-    isDragging = false;
-  });
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        item.style.zIndex = 1;  // Reset stacking order
+    });
 });

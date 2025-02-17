@@ -34,17 +34,17 @@
     <div class="item item25">25</div>
   </div>
 
-<script>
-//Your code goes here 
-	var items = document.querySelectorAll('.item');
-        var itemsArray = Array.prototype.slice.call(items);
-        itemsArray.forEach(function (item) {
-            item.addEventListener('click', function () {
-                var index = itemsArray.indexOf(this);
-                var item = itemsArray[index];
-                item.classList.toggle('active');
-            });
-        });
+<script src="script.js">
+// //Your code goes here 
+// 	var items = document.querySelectorAll('.item');
+//         var itemsArray = Array.prototype.slice.call(items);
+//         itemsArray.forEach(function (item) {
+//             item.addEventListener('click', function () {
+//                 var index = itemsArray.indexOf(this);
+//                 var item = itemsArray[index];
+//                 item.classList.toggle('active');
+//             });
+//         });
 </script>
 
   </body>
